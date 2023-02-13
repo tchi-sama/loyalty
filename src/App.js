@@ -1,13 +1,28 @@
+import { collection, onSnapshot, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import Avatar from "./components/Avatar";
 import Canvas from "./components/Canvas";
+import { db } from "./firebase";
 
 
 function App() {
-  const [users, setUsers] = useState([{id:1,x:50,y:150},{id:2,x:100,y:100}]);
-  const [userId , setUserId] = useState(1);
+  const [users, setUsers] = useState([]);
+  const [userId , setUserId] = useState("PdXMIcBicLAIonBph7UN");
   const [usersPosition, setUsersPosition] = useState([])
   const [userInfo, setUserInfo] = useState({})
+
+  useEffect(() => {
+     const q = query(collection(db, "users"));
+     const get = onSnapshot(q, (querySnapshot) => {
+      let userArr = [];
+      querySnapshot.forEach((doc) => {
+          userArr.push({...doc.data(),id:doc.id})
+      });
+      setUsers(userArr);
+      console.log(userArr);
+     })
+     return ()=> get();
+  },[])
 
   useEffect(() => {
     let getuser = users.filter(user => user.id === userId) 
